@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+#définit le formulaire que l'api accepte via un POST 
 class SharpeInputSerializer(serializers.Serializer):
     montant_initial_investissement = serializers.DecimalField(max_digits=20, decimal_places=2)
     montant_contribution_recurrente = serializers.DecimalField(max_digits=20, decimal_places=2)
