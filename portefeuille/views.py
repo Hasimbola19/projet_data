@@ -5,11 +5,12 @@ from rest_framework import status
 from .serializers import SharpeInputSerializer
 
 class PortefeuilleCalculatorView(APIView):
+    #récupere les données de l'utilisateyr via la requete post
     def post(self, request):
         serializer = SharpeInputSerializer(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data
-
+#calcul du rendement, volatilite, ratio de sharpe..
             rendements = np.array(data.get("rendements", []))
             risk_free_rate = data.get("risk_free_rate", 0.01)
             actifs = data.get("actifs", [])
