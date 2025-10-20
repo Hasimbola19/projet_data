@@ -1,5 +1,5 @@
 from .models import ETF
-
+# crée les etf populaires 
 def creer_etf_populaires():
     etfs = [
         {"nom": "SPDR S&P 500 ETF", "ticker": "SPY"},
