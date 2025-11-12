@@ -1,27 +1,19 @@
 from rest_framework import serializers
-#définit le formulaire que l'api accepte via un POST 
 
-class SharpeInputSerializer(serializers.Serializer):
-    #les champs envoyés par le user via l'api
-    montant_initial_investissement = serializers.DecimalField(max_digits=20, decimal_places=2)
-    montant_contribution_recurrente = serializers.DecimalField(max_digits=20, decimal_places=2)
-    frequence_contribution = serializers.ChoiceField(choices=[1,2,3])
-    duree_investissement = serializers.IntegerField()
-    frais_gestion_annuels = serializers.DecimalField(max_digits=5, decimal_places=2)
 
+class SimulerPortefeuilleSerializer(serializers.Serializer):
+    # Types de données recu de la part de serveur client
+    montant_initial = serializers.DecimalField(max_digits=15, decimal_places=2)
+    montant_contribution = serializers.DecimalField(max_digits=15, decimal_places=2, default=0)
+    frequence_contribution = serializers.ChoiceField(choices=[1, 4, 2, 12], default=1)
+    duree_investissement = serializers.IntegerField(min_value=1)
+    frais_gestion_annuels = serializers.DecimalField(max_digits=5, decimal_places=2, default=0.2)
+    
+    # Composition du portefeuille
     actifs = serializers.ListField(
-        child = serializers.CharField(max_length=50), required=False,
-        help_text = "Liste des types d'actifs : ACTIONS, OBLIGATIONS, ETF"
+        child=serializers.DictField(),
+        help_text="Liste de {ticker, ponderation}"
     )
-    etfs_populaires = serializers.ListField(
-        child = serializers.CharField(max_length=50), required=False,
-        help_text = "Liste des ETF populaires sélectionnés"
-    )
-
-    expected_return = serializers.FloatField(required=False)
-    volatility = serializers.FloatField(required=False)
-    rendements = serializers.ListField(
-        child = serializers.FloatField(),
-        help_text ="Liste des rendements historiques (mensuels, journaliers, ...)"
-    )
-    risk_free_rate = serializers.FloatField(default=0.01)
+    
+    risques = serializers.FloatField(default=0.02)
+    periode_historique = serializers.CharField(default="5y")

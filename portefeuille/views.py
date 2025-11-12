@@ -1,84 +1,95 @@
-import numpy as np
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import SharpeInputSerializer
 
-class PortefeuilleCalculatorView(APIView):
-    #récupere les données de l'utilisateyr via la requete post
+from .serializers import SimulerPortefeuilleSerializer
+from .func import (
+    telecharger_donnees_marche, calculer_rendements, calculer_sharpe_ratio,
+    calculer_volatilite, calculer_rendement_moyen, calculer_cagr,
+    simuler_investissement_dca
+)
+
+# View pour les calculs et le renvoi des données 
+class SimuerPortefeuilleView(APIView):
+    # Requête de type post pour récupérer les données de la requête client et faire le calcul
     def post(self, request):
-        serializer = SharpeInputSerializer(data=request.data)
-        if serializer.is_valid():
-            data = serializer.validated_data
-#calcul du rendement, volatilite, ratio de sharpe..
-            rendements = np.array(data.get("rendements", []))
-            risk_free_rate = data.get("risk_free_rate", 0.01)
-            actifs = data.get("actifs", [])
-            etfs_populaires = data.get("etfs_populaires", [])
-            duree = data.get("duree_investissement", 10)
-            frais = float(data.get("frais_gestion_annuels")) / 100
-            montant_initial = float(data.get("montant_initial_investissement"))
-            contribution = float(data.get("montant_contribution_recurrente"))
-            frequence = data.get("frequence_contribution", 1)
+        serializer = SimulerPortefeuilleSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Récupérer les données depuis la cors de la requete du clien
+        data = serializer.validated_data
 
-            if len(rendements) < 2:
+        # Récupérer les Paramètres
+        montant_initial = float(data['montant_initial'])
+        montant_contribution = float(data['montant_contribution'])
+        frequence = data['frequence_contribution']
+        duree = data['duree_investissement']
+        frais = float(data['frais_gestion_annuels'])
+        actifs = data['actifs']
+        risques = data['risques']
+        periode = data['periode_historique']
+
+        # Télécharger les données de chaque actif
+        rendements_portefeuille = None
+        composition = []
+
+        for actif in actifs:
+            ticker = actif['ticker']
+            ponderation = float(actif['ponderation']) / 100
+
+            # Tél"charger les données depuis yfinance
+            df = telecharger_donnees_marche(ticker, periode)
+            if df.empty:
                 return Response(
-                    {"error": "Il faut au moins deux rendements pour calculer la volatilité."},
+                    {"error": f"impossible de tékécharger {ticker}"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-
-            # Calcul du rendement moyen et de la volatilité
-            expected_return = float(np.mean(rendements))
-            volatility = float(np.std(rendements, ddof=1))
-            sharpe_ratio = (expected_return - risk_free_rate) / volatility if volatility > 0 else None
-
-            # Projection annuelle
-            valeurs_annuelles = []
-            valeur = montant_initial
-
-            if frequence == 1 : # mensuelle
-                contribution_annuelle = contribution * 12
-            elif frequence == 2 : # trimestrielle
-                contribution_annuelle = contribution * 4
-            else :
-                contribution_annuelle = contribution
-
-            total_contrib = 0
-
-            for annee in range(1, duree + 1):
-                total_contrib += contribution_annuelle
-                valeur = (valeur + contribution_annuelle) * (1 + expected_return - frais)
-                gain_net = valeur - (montant_initial + total_contrib)
-                valeurs_annuelles.append({
-                    "annee": annee,
-                    "valeur": round(valeur, 2),
-                    "contributions_cumulees": round(total_contrib, 2),
-                    "gain_net": round(gain_net, 2)
-                })
-
-            # Intervalles statistiques (règle 68-95-99.7 %)
-            interval_68 = [expected_return - volatility, expected_return + volatility]
-            interval_95 = [expected_return - 2*volatility, expected_return + 2*volatility]
-            interval_997 = [expected_return - 3*volatility, expected_return + 3*volatility]
-
-            return Response({
-                "actifs_selectionnes": actifs,
-                "etfs_populaires": etfs_populaires,
-                "expected_return": round(expected_return, 6),
-                "volatility": round(volatility, 6),
-                "sharpe_ratio": round(sharpe_ratio, 6) if sharpe_ratio else None,
-                "intervals_volatilite": {
-                    "68%": [round(interval_68[0], 6), round(interval_68[1], 6)],
-                    "95%": [round(interval_95[0], 6), round(interval_95[1], 6)],
-                    "99.7%": [round(interval_997[0], 6), round(interval_997[1], 6)]
-                },
-                "valeurs_annuelles": valeurs_annuelles,
-                "interpretation": (
-                    "Selon la loi normale :\n"
-                    "- 68% des rendements dans ±1σ\n"
-                    "- 95% dans ±2σ\n"
-                    "- 99,7% dans ±3σ\n"
-                    "Plus la volatilité est forte, plus le risque de fluctuation est élevé."
-                )
+            
+            # Caclculer les rendements
+            rendements = calculer_rendements(df['Close'])
+            if rendements_portefeuille is None:
+                rendements_portefeuille = rendements * ponderation
+            else:
+                rendements_portefeuille = rendements_portefeuille.add(rendements * ponderation, fill_value=0)
+            
+            composition.append({
+                'ticker': ticker,
+                'ponderation': actif['ponderation'],
+                'rendement_moyen': round(calculer_rendement_moyen(rendements.values) * 100, 2),
+                'volatilite': round(calculer_volatilite(rendements.values) * 100, 2)
             })
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Calculer les ratios
+        rendements_array = rendements_portefeuille.values
+        rendement_moyen = calculer_rendement_moyen(rendements_array)
+        volatilite = calculer_volatilite(rendements_array)
+        sharpe = calculer_sharpe_ratio(rendements_array, risques)
+
+        # Simuler DCA
+        simulation_dca = simuler_investissement_dca(
+            montant_initial, montant_contribution, frequence, duree, rendement_moyen, frais
+        )
+
+        cagr = calculer_cagr(montant_initial, simulation_dca['valeur_finale'], duree)
+
+        return Response({
+            'parametres': {
+                'montant_initial': montant_initial,
+                'contribution': montant_contribution,
+                'frequence': ['Mensuel', 'Trimestriel', 'Semestriel', 'Annuel'][
+                    [1, 4, 2, 12].index(frequence)
+                ],
+                'duree': duree,
+                'frais': float(data['frais_gestion_annuels'])
+            },
+            'composition': composition,
+            'ratios_financiers': {
+                'rendement_moyen_annuel': round(rendement_moyen * 100, 2),
+                'volatilite_annuelle': round(volatilite * 100, 2),
+                'sharpe_ratio': round(sharpe, 3),
+                'cagr': round(cagr * 100, 2),
+                'rendement_total': simulation_dca['rendement_total']
+            },
+            'simulation': simulation_dca
+        })
