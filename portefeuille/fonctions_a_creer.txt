@@ -1,0 +1,22 @@
+    telecharger_donnees_marche, calculer_rendements, calculer_sharpe_ratio,
+    calculer_volatilite, calculer_rendement_moyen, calculer_cagr,
+    simuler_investissement_dca
+
+
+    telecharger_donnees_marche(ticker, periode="5y")
+    calculer_rendements(prix)
+    calculer_volatilite(rendements, annualiser=True)
+    calculer_rendement_moyen(rendements, annualiser=True)
+    calculer_sharpe_ratio(rendements, risk_free_rate=0.02) // on a besoin de rendement et de volatilité
+    calculer_cagr(valeur_initiale, valeur_finale, nb_annees)
+    simuler_investissement_dca(montant_initial, contribution, frequence, duree_annees, rendement_annuel, frais_annuels=0)
+    predire_regression_lineaire(X, y, X_pred)
+
+
+def telecharger_donnees_marche(ticker, periode="5y"):
+    #Télécharge les données historiques depuis Yahoo Finance
+    try:
+        etf = yf.Ticker(ticker)
+        return etf.history(period=periode)
+    except:
+        return pd.DataFrame()
