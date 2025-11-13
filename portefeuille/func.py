@@ -13,7 +13,7 @@ from sklearn.linear_model import LinearRegression
     predire_regression_lineaire(X, y, X_pred)
 '''
 def telecharger_donnees_marche(ticker, periode="5y"):
-    #Télécharge les données historiques depuis Yahoo Finance
+    #Téléchargement des données historiques depuis Yahoo Finance
     try:
         etf = yf.Ticker(ticker)
         return etf.history(period=periode)
@@ -26,17 +26,17 @@ def calculer_volatilite(rendements, annualiser=True):
     #Calcule la volatilité des rendements
     volatilite = rendements.std()
     if annualiser:
-        volatilite *= (252 ** 0.5)  # Annualisation pour les rendements quotidiens
+        volatilite *= (252 ** 0.5)  
     return volatilite
 
 def calculer_rendement_moyen(rendements, annualiser=True):
-    #Calcule le rendement moyen des rendements
+    #Calcule le rendement moyen 
     rendement_moyen = rendements.mean()
     if annualiser:
         rendement_moyen *= 252  # Annualisation pour les rendements quotidiens
     return rendement_moyen          
 def calculer_sharpe_ratio(rendements, risk_free_rate=0.02): 
-    #Calcule le Sharpe Ratio
+    #Calcule leratio de sharp
     rendement_moyen = calculer_rendement_moyen(rendements)
     volatilite = calculer_volatilite(rendements)
     if volatilite == 0:
