@@ -56,6 +56,7 @@ def calculer_cagr(valeur_initiale, valeur_finale, nb_annees):
 
 def simuler_investissement_dca(montant_initial, contribution, frequence, duree_annees, rendement_annuel, frais_annuels=0):
     #Simule un investissement en DCA (Dollar-Cost Averaging)
+    # Déterminer le nombre de périodes par an en fonction de la fréquence
     if frequence == 1:
         periode_par_an = 12
     elif frequence == 2:
@@ -73,6 +74,7 @@ def simuler_investissement_dca(montant_initial, contribution, frequence, duree_a
     contribution_totale = 0
     donnees_annuelles = []
     
+    # Simuler chaque période d'investissement
     for periode in range(1, nb_periodes + 1):
         valeur_portefeuille += contribution
         contribution_totale += contribution
@@ -84,6 +86,7 @@ def simuler_investissement_dca(montant_initial, contribution, frequence, duree_a
                 'contributions': round(montant_initial + contribution_totale, 2),
                 'gain': round(valeur_portefeuille - (montant_initial + contribution_totale), 2)
             })
+    # Retourner les résultats de la simulation
     return {
         'valeur_finale': round(valeur_portefeuille, 2),
         'montant_investi': round(montant_initial + contribution_totale, 2),
