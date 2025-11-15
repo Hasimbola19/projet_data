@@ -21,7 +21,8 @@ def telecharger_donnees_marche(ticker, periode="5y"):
         return pd.DataFrame()
 def calculer_rendements(prix):
     #Calcule les rendements quotidiens à partir des prix de clôture ajustés
-    return prix['Close'].pct_change().dropna()  
+    return prix.pct_change().dropna()  
+
 def calculer_volatilite(rendements, annualiser=True):
     #Calcule la volatilité des rendements
     volatilite = rendements.std()
@@ -35,6 +36,7 @@ def calculer_rendement_moyen(rendements, annualiser=True):
     if annualiser:
         rendement_moyen *= 252  # Annualisation pour les rendements quotidiens
     return rendement_moyen          
+
 def calculer_sharpe_ratio(rendements, risk_free_rate=0.02): 
     #Calcule leratio de sharp
     rendement_moyen = calculer_rendement_moyen(rendements)
@@ -43,21 +45,54 @@ def calculer_sharpe_ratio(rendements, risk_free_rate=0.02):
         return 0
     sharpe_ratio = (rendement_moyen - risk_free_rate) / volatilite
     return sharpe_ratio
+
 def calculer_cagr(valeur_initiale, valeur_finale, nb_annees):
     #Calcule le taux de croissance annuel composé (CAGR)
     if valeur_initiale <= 0 or nb_annees <= 0:
         return 0
     cagr = (valeur_finale / valeur_initiale) ** (1 / nb_annees) - 1
     return cagr
+
 def simuler_investissement_dca(montant_initial, contribution, frequence, duree_annees, rendement_annuel, frais_annuels=0):
     #Simule un investissement en DCA (Dollar-Cost Averaging)
-    nb_periodes = duree_annees * frequence
+    if frequence == 1:
+        periode_par_an = 12
+    elif frequence == 2:
+        periode_par_an = 4
+    elif frequence == 4:
+        periode_par_an = 2
+    else:
+        periode_par_an = 1
+
+    nb_periodes = duree_annees * periode_par_an 
+    rendement_periode = (1 + rendement_annuel) ** (1 / periode_par_an) - 1
+    frais_par_periode = (1 + frais_annuels) ** (1 / periode_par_an) - 1
+
     valeur_portefeuille = montant_initial
+    contribution_totale = 0
+    donnees_annuelles = []
+    
     for periode in range(1, nb_periodes + 1):
-        valeur_portefeuille *= (1 + rendement_annuel / frequence)
         valeur_portefeuille += contribution
-        valeur_portefeuille *= (1 - frais_annuels / frequence)
-    return valeur_portefeuille
+        contribution_totale += contribution
+        valeur_portefeuille = valeur_portefeuille * (1 + rendement_periode) * (1 - frais_par_periode)
+        if periode % periode_par_an == 0:
+            donnees_annuelles.append({
+                'annee': periode // periode_par_an,
+                'valeur': round(valeur_portefeuille, 2),
+                'contributions': round(montant_initial + contribution_totale, 2),
+                'gain': round(valeur_portefeuille - (montant_initial + contribution_totale), 2)
+            })
+    return {
+        'valeur_finale': round(valeur_portefeuille, 2),
+        'montant_investi': round(montant_initial + contribution_totale, 2),
+        'gain_total': round(valeur_portefeuille - (montant_initial + contribution_totale), 2),
+        'rendement_total': round((valeur_portefeuille - (montant_initial + contribution_totale)) / (montant_initial + contribution_totale) * 100, 2),
+        'cagr': round(calculer_cagr(montant_initial, valeur_portefeuille, duree_annees) * 100, 2),
+        'contribution_totale': round(contribution_totale + montant_initial, 2),
+        'donnees_annuelles': donnees_annuelles
+    }
+
 def predire_regression_lineaire(X, y, X_pred):
     #Prédit des valeurs en utilisant la régression linéaire
     model = LinearRegression()
