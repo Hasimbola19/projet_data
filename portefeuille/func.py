@@ -19,6 +19,7 @@ def telecharger_donnees_marche(ticker, periode="5y"):
         return etf.history(period=periode)
     except:
         return pd.DataFrame()
+    
 def calculer_rendements(prix):
     #Calcule les rendements quotidiens à partir des prix de clôture ajustés
     return prix.pct_change().dropna()  

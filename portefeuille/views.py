@@ -6,8 +6,9 @@ from .serializers import SimulerPortefeuilleSerializer
 from .func import (
     telecharger_donnees_marche, calculer_rendements, calculer_sharpe_ratio,
     calculer_volatilite, calculer_rendement_moyen, calculer_cagr,
-    simuler_investissement_dca
+    simuler_investissement_dca, predire_regression_lineaire
 )
+import numpy as np
 
 # View pour les calculs et le renvoi des données 
 class SimuerPortefeuilleView(APIView):
@@ -20,7 +21,7 @@ class SimuerPortefeuilleView(APIView):
         # Récupérer les données depuis la cors de la requete du clien
         data = serializer.validated_data
 
-        # Récupérer les Paramètres
+        # Récupérer les Paramètres depuis la requete client
         montant_initial = float(data['montant_initial'])
         montant_contribution = float(data['montant_contribution'])
         frequence = data['frequence_contribution']
@@ -29,8 +30,8 @@ class SimuerPortefeuilleView(APIView):
         actifs = data['actifs']
         risques = data['risques']
         periode = data['periode_historique']
+        
 
-        # Télécharger les données de chaque actif
         rendements_portefeuille = None
         composition = []
 
@@ -38,7 +39,7 @@ class SimuerPortefeuilleView(APIView):
             ticker = actif['ticker']
             ponderation = float(actif['ponderation']) / 100
 
-            # Tél"charger les données depuis yfinance
+            # Télécharger les données depuis yfinance
             df = telecharger_donnees_marche(ticker, periode)
             if df.empty:
                 return Response(
@@ -47,6 +48,7 @@ class SimuerPortefeuilleView(APIView):
                 )
             
             # Caclculer les rendements
+            # Calculer les rendements 
             rendements = calculer_rendements(df['Close'])
             if rendements_portefeuille is None:
                 rendements_portefeuille = rendements * ponderation
@@ -73,6 +75,28 @@ class SimuerPortefeuilleView(APIView):
 
         cagr = calculer_cagr(montant_initial, simulation_dca['valeur_finale'], duree)
 
+        # Prédiction avec régression linéaire
+        donnees_annuelles = simulation_dca['donnees_annuelles']
+        if len(donnees_annuelles) > 1:
+            # Préparer les données pour la régression
+            X = np.array([[d['annee']] for d in donnees_annuelles])
+            y = np.array([d['valeur'] for d in donnees_annuelles])
+            
+            # Prédire les 3-5 prochaines années
+            annees_futures = 10
+            X_pred = np.array([[duree + i] for i in range(1, annees_futures + 1)])
+            predictions = predire_regression_lineaire(X, y, X_pred)
+            
+            predictions_futures = [
+                {
+                    'annee': int(duree + i + 1),
+                    'valeur_predite': round(float(predictions[i]), 2)
+                }
+                for i in range(len(predictions))
+            ]
+        else:
+            predictions_futures = []
+
         return Response({
             'parametres': {
                 'montant_initial': montant_initial,
@@ -91,5 +115,6 @@ class SimuerPortefeuilleView(APIView):
                 'cagr': round(cagr * 100, 2),
                 'rendement_total': simulation_dca['rendement_total']
             },
-            'simulation': simulation_dca
+            'simulation': simulation_dca,
+            'predictions_futures': predictions_futures
         })
