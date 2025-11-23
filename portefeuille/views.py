@@ -11,18 +11,15 @@ from .func import (
 )
 import numpy as np
 
-# View pour les calculs et le renvoi des données 
 class SimuerPortefeuilleView(APIView):
-    # Requête de type post pour récupérer les données de la requête client et faire le calcul
     def post(self, request):
         serializer = SimulerPortefeuilleSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        # Récupérer les données depuis la cors de la requete du clien
         data = serializer.validated_data
 
-        # Récupérer les Paramètres depuis la requete client
+        # --- Paramètres ---
         montant_initial = float(data['montant_initial'])
         montant_contribution = float(data['montant_contribution'])
         frequence = data['frequence_contribution']
@@ -31,25 +28,29 @@ class SimuerPortefeuilleView(APIView):
         actifs = data['actifs']
         risques = data['risques']
         periode = data['periode_historique']
-        
 
         rendements_portefeuille = None
         prix_portefeuille = None
         composition = []
 
+        # --- Calcul des rendements du portefeuille ---
         for actif in actifs:
             ticker = actif['ticker']
             ponderation = float(actif['ponderation']) / 100
 
-            # Télécharger les données depuis yfinance
             df = telecharger_donnees_marche(ticker, periode)
             if df.empty:
+<<<<<<< HEAD
                 return Response(
                     {"error": f"impossible de télécharger {ticker}"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
             # Calculer les rendements 
+=======
+                return Response({"error": f"Impossible de télécharger {ticker}"}, status=status.HTTP_400_BAD_REQUEST)
+            
+>>>>>>> d264fed78a673930db893c493d6dff15844d5daa
             rendements = calculer_rendements(df['Close'])
             if rendements_portefeuille is None:
                 rendements_portefeuille = rendements * ponderation
@@ -67,16 +68,22 @@ class SimuerPortefeuilleView(APIView):
                 'rendement_moyen': round(calculer_rendement_moyen(rendements.values) * 100, 2),
                 'volatilite': round(calculer_volatilite(rendements.values) * 100, 2),
             })
-        
-        # Calculer les ratios
-        rendements_array = rendements_portefeuille.values
+
+        rendements_array = np.array(rendements_portefeuille.values, dtype=float)
+
         rendement_moyen = calculer_rendement_moyen(rendements_array)
         volatilite = calculer_volatilite(rendements_array)
         sharpe = calculer_sharpe_ratio(rendements_array, risques)
 
+<<<<<<< HEAD
         # Simuler DCA avec les prix historiques réels
         simulation_dca = simuler_investissement_dca_historique(
             montant_initial, montant_contribution, frequence, prix_portefeuille, frais
+=======
+        # --- Simulation portefeuille DCA ---
+        simulation_dca = simuler_investissement_dca(
+            montant_initial, montant_contribution, frequence, duree, rendement_moyen, frais
+>>>>>>> d264fed78a673930db893c493d6dff15844d5daa
         )
 
         # Calculer les rendements périodiques détaillés
@@ -108,6 +115,7 @@ class SimuerPortefeuilleView(APIView):
             # Si la comparaison échoue, continuer sans
             pass
 
+<<<<<<< HEAD
         # Prédiction avec régression linéaire
         if len(donnees_annuelles) > 1:
             # Préparer les données pour la régression
@@ -125,23 +133,43 @@ class SimuerPortefeuilleView(APIView):
                     'valeur_predite': round(float(predictions[i]), 2)
                 }
                 for i in range(len(predictions))
+=======
+        # --- ACWI simulé et aligné sur le portefeuille ---
+        acwi_df = telecharger_donnees_marche("ACWI", periode)
+        acwi_data = []
+        if not acwi_df.empty:
+            acwi_rendements = calculer_rendements(acwi_df['Close'])
+            acwi_simulation = simuler_investissement_dca(
+                montant_initial,
+                montant_contribution,
+                frequence,
+                duree,
+                calculer_rendement_moyen(acwi_rendements.values),
+                frais
+            )
+            annees_portefeuille = [d['annee'] for d in simulation_dca['donnees_annuelles']]
+            acwi_dict = {d['annee']: d['valeur'] for d in acwi_simulation['donnees_annuelles']}
+            acwi_data = [
+                {'annee': annee, 'valeur': round(acwi_dict.get(annee, list(acwi_dict.values())[-1]), 2)}
+                for annee in annees_portefeuille
+>>>>>>> d264fed78a673930db893c493d6dff15844d5daa
             ]
-        else:
-            predictions_futures = []
 
+        # --- Fréquences lisibles ---
+        frequences_map = {1: "Mensuel", 2: "Trimestriel", 4: "Semestriel", 12: "Annuel"}
+
+        # --- Réponse ---
         return Response({
             'parametres': {
                 'date_debut': prix_portefeuille.index[0].strftime('%Y-%m-%d'),
                 'date_fin': prix_portefeuille.index[-1].strftime('%Y-%m-%d'),
                 'montant_initial': montant_initial,
                 'contribution': montant_contribution,
-                'frequence': ['Mensuel', 'Trimestriel', 'Semestriel', 'Annuel'][
-                    [1, 4, 2, 12].index(frequence)
-                ],
+                'frequence': frequences_map.get(frequence, frequence),
                 'duree': duree,
-                'frais': float(data['frais_gestion_annuels'])
+                'frais': frais,
+                'actifs': [{"ticker": actif['ticker']}]
             },
-            'composition': composition,
             'ratios_financiers': {
                 'rendement_moyen_annuel': round(rendement_moyen * 100, 2),
                 'volatilite_annuelle': round(volatilite * 100, 2),
@@ -150,8 +178,12 @@ class SimuerPortefeuilleView(APIView):
                 'rendement_total': simulation_dca['rendement_total']
             },
             'simulation': simulation_dca,
+<<<<<<< HEAD
             'rendements_detailles': rendements_detailles,
             'impact_inflation': impact_inflation,
             'comparaison_indice': comparaison_indice,
             'predictions_futures': predictions_futures
+=======
+            'acwi': acwi_data
+>>>>>>> d264fed78a673930db893c493d6dff15844d5daa
         })

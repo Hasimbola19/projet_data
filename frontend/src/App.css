@@ -17,6 +17,95 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
+.formulaire {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #f4f6f8;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  text-align: left;
+  font-family: 'Arial', sans-serif;
+  transition: all 0.3s ease-in-out;
+}
+
+.formulaire h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+
+
+.formulaire label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #555;
+}
+
+.formulaire input,
+.formulaire select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+.formulaire input:focus,
+.formulaire select:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76,175,80,0.5);
+  outline: none;
+}
+
+.formulaire button {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #4caf50, #45a049);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.formulaire button:hover {
+  background: linear-gradient(90deg, #45a049, #4caf50);
+  transform: translateY(-2px);
+}
+
+.formulaire button:active {
+  transform: translateY(0);
+}
+.formulaire .form-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.formulaire .form-row .form-group {
+  display: flex;        /* mettre label et input sur la même ligne */
+  flex-direction: row; 
+  align-items: center;  
+  flex: 1;
+  min-width: 150px;
+}
+
+.formulaire .form-row .form-group label {
+  width: 120px;        
+  margin-bottom: 0;    
+}
+
+.formulaire .form-row .form-group input,
+.formulaire .form-row .form-group select {
+  flex: 1;             
+  width: auto;         
+}
+
 
 @keyframes logo-spin {
   from {

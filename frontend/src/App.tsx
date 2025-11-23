@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import FormulairePortefeuille from "./FormulairePortefeuille";
+import DashboardPortefeuille from "./DashboardPortefeuille";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [resultat, setResultat] = useState<any>(null);
+
+  const handleSimuler = async (params: any) => {
+  try {
+    const response = await fetch("http://localhost:8000/api/simuler/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+    });
+    const data = await response.json();
+
+    console.log("Réponse API :", data); // <--- vérifie que les données arrivent
+ 
+
+    // Ici, on peut aussi récupérer un indice ACWI IMI simulé ou depuis Yahoo Finance
+    // Exemple : l'API Django renvoie un tableau "acwi" déjà présent dans la réponse
+    setResultat(data);
+  } catch (err) {
+    console.error("Erreur lors de la simulation :", err);
+  }
+};
+
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div>
+      <h1>Simulation Portefeuille Passif</h1>
+      <FormulairePortefeuille onSubmit={handleSimuler} />
+      <DashboardPortefeuille data={resultat} />
+    </div>
+  );
 }
 
-export default App
+export default App;
