@@ -14,11 +14,9 @@ function App() {
     });
     const data = await response.json();
 
-    console.log("Réponse API :", data); // <--- vérifie que les données arrivent
+    console.log("Réponse API :", data); 
  
 
-    // Ici, on peut aussi récupérer un indice ACWI IMI simulé ou depuis Yahoo Finance
-    // Exemple : l'API Django renvoie un tableau "acwi" déjà présent dans la réponse
     setResultat(data);
   } catch (err) {
     console.error("Erreur lors de la simulation :", err);

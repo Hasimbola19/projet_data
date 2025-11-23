@@ -17,93 +17,102 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
-.formulaire {
-  max-width: 500px;
+/* Conteneur général */
+.modern-grid {
+  max-width: 1200px;
   margin: 2rem auto;
   padding: 2rem;
-  background: #f4f6f8;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-  text-align: left;
+  background: #f8f9fc;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
   font-family: 'Arial', sans-serif;
-  transition: all 0.3s ease-in-out;
 }
 
-.formulaire h2 {
-  text-align: center;
-  margin-bottom: 1rem;
-  color: #333;
+/* Grille 3 colonnes */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
 }
 
+/* Carte individuelle pour chaque champ */
+.field-card {
+  background: #fff;
+  padding: 1rem 1.2rem;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
+.field-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
 
-.formulaire label {
+/* Labels et champs */
+.field-card label {
   display: block;
-  margin-bottom: 0.5rem;
   font-weight: bold;
-  color: #555;
+  margin-bottom: 0.5rem;
+  color: #444;
 }
 
-.formulaire input,
-.formulaire select {
+.field-card input,
+.field-card select {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.7rem 1rem;
   border-radius: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #ccd;
   font-size: 14px;
-  transition: border 0.3s, box-shadow 0.3s;
+  margin-bottom: 0.3rem;
+  box-sizing: border-box;
 }
 
-.formulaire input:focus,
-.formulaire select:focus {
-  border-color: #4caf50;
-  box-shadow: 0 0 5px rgba(76,175,80,0.5);
-  outline: none;
+/* Carte large pour les actifs */
+.asset-card {
+  grid-column: span 3;
 }
 
-.formulaire button {
+/* Bouton simuler */
+.submit-btn {
+  margin-top: 20px;
   width: 100%;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #4caf50, #45a049);
+  padding: 1rem;
+  background: linear-gradient(90deg, #4caf50, #43a047);
   color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
+  transition: 0.3s;
 }
 
-.formulaire button:hover {
-  background: linear-gradient(90deg, #45a049, #4caf50);
+.submit-btn:hover {
+  background: linear-gradient(90deg, #43a047, #4caf50);
   transform: translateY(-2px);
 }
 
-.formulaire button:active {
-  transform: translateY(0);
-}
-.formulaire .form-row {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+/* Responsive tablette (2 colonnes) */
+@media (max-width: 900px) {
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .asset-card {
+    grid-column: span 2;
+  }
 }
 
-.formulaire .form-row .form-group {
-  display: flex;        /* mettre label et input sur la même ligne */
-  flex-direction: row; 
-  align-items: center;  
-  flex: 1;
-  min-width: 150px;
-}
+/* Responsive mobile (1 colonne) */
+@media (max-width: 600px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
 
-.formulaire .form-row .form-group label {
-  width: 120px;        
-  margin-bottom: 0;    
-}
-
-.formulaire .form-row .form-group input,
-.formulaire .form-row .form-group select {
-  flex: 1;             
-  width: auto;         
+  .asset-card {
+    grid-column: span 1;
+  }
 }
 
 

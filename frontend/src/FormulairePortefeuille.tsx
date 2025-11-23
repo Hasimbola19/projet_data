@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./App.css";
 
 type Actif = { type: string; ticker: string; ponderation: number };
 
@@ -16,7 +17,6 @@ export default function FormulairePortefeuille({ onSubmit }: FormulaireProps) {
 
   const [actif, setActif] = useState<Actif>({ type: "ETF", ticker: "SPY", ponderation: 100 });
 
-  // Listes d'actifs
   const ETF_LIST = [
     { ticker: "SPY", nom: "S&P 500 ETF" },
     { ticker: "VTI", nom: "Total Stock Market ETF" },
@@ -49,7 +49,7 @@ export default function FormulairePortefeuille({ onSubmit }: FormulaireProps) {
       frequence_contribution: frequence,
       duree_investissement: duree,
       frais_gestion_annuels: frais,
-      actifs: [actif], // toujours sous forme de liste
+      actifs: [actif], 
       risques: 0.02,
       periode_historique: "5y",
       strategie: strategie,
@@ -57,21 +57,20 @@ export default function FormulairePortefeuille({ onSubmit }: FormulaireProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="formulaire">
-      <div className="form-row">
-        <div className="form-group">
-          <label>Montant initial (€) :</label>
+    <form onSubmit={handleSubmit} className="modern-grid">
+      <div className="grid-container">
+        <div className="field-card">
+          <label>Montant initial (€)</label>
           <input type="number" value={montantInitial} onChange={(e) => setMontantInitial(+e.target.value)} />
         </div>
-        <div className="form-group">
-          <label>Contribution (€) :</label>
+
+        <div className="field-card">
+          <label>Contribution (€)</label>
           <input type="number" value={contribution} onChange={(e) => setContribution(+e.target.value)} />
         </div>
-      </div>
 
-      <div className="form-row">
-        <div className="form-group">
-          <label>Fréquence :</label>
+        <div className="field-card">
+          <label>Fréquence</label>
           <select value={frequence} onChange={(e) => setFrequence(+e.target.value)}>
             <option value={1}>Mensuel</option>
             <option value={2}>Trimestriel</option>
@@ -79,61 +78,48 @@ export default function FormulairePortefeuille({ onSubmit }: FormulaireProps) {
             <option value={12}>Annuel</option>
           </select>
         </div>
-        <div className="form-group">
-          <label>Durée (années) :</label>
+
+        <div className="field-card">
+          <label>Durée (années)</label>
           <input type="number" value={duree} onChange={(e) => setDuree(+e.target.value)} />
         </div>
-      </div>
 
-      <div className="form-row">
-        <div className="form-group">
-          <label>Frais annuels (%) :</label>
+        <div className="field-card">
+          <label>Frais annuels (%)</label>
           <input type="number" step="0.01" value={frais} onChange={(e) => setFrais(+e.target.value)} />
         </div>
-        <div className="form-group">
-          <label>Stratégie :</label>
+
+        <div className="field-card">
+          <label>Stratégie</label>
           <select value={strategie} onChange={(e) => setStrategie(e.target.value as "DCA" | "LumpSum")}>
             <option value="DCA">DCA</option>
             <option value="LumpSum">Lump Sum</option>
           </select>
         </div>
-      </div>
 
-      <div className="form-row">
-        <div className="form-group">
-          <label>Type d'actif :</label>
-          <select
-            value={actif.type}
-            onChange={(e) => setActif({ ...actif, type: e.target.value, ticker: "" })}
-          >
+        {/* Carte large : actifs */}
+        <div className="field-card asset-card">
+          <label>Type d'actif</label>
+          <select value={actif.type} onChange={(e) => setActif({ ...actif, type: e.target.value, ticker: "" })}>
             <option value="ETF">ETF</option>
             <option value="Action">Action</option>
             <option value="Obligation">Obligation</option>
           </select>
-        </div>
-        <div className="form-group">
-          <label>Actif :</label>
-          <select
-            value={actif.ticker}
-            onChange={(e) => setActif({ ...actif, ticker: e.target.value })}
-          >
+
+          <label>Actif</label>
+          <select value={actif.ticker} onChange={(e) => setActif({ ...actif, ticker: e.target.value })}>
             <option value="">Sélectionner un actif</option>
             {ALL_ASSETS.find((a) => a.type === actif.type)?.list.map((e) => (
               <option key={e.ticker} value={e.ticker}>{e.nom}</option>
             ))}
           </select>
-        </div>
-        <div className="form-group">
-          <label>Pondération (%) :</label>
-          <input
-            type="number"
-            value={actif.ponderation}
-            onChange={(e) => setActif({ ...actif, ponderation: +e.target.value })}
-          />
+
+          <label>Pondération (%)</label>
+          <input type="number" value={actif.ponderation} onChange={(e) => setActif({ ...actif, ponderation: +e.target.value })} />
         </div>
       </div>
 
-      <button type="submit">Simuler</button>
+      <button type="submit" className="submit-btn">Simuler</button>
     </form>
   );
 }
