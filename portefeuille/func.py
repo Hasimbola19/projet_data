@@ -56,43 +56,22 @@ def calculer_cagr(valeur_initiale, valeur_finale, nb_annees):
 
 def calculer_cagr_dca(montant_initial, contribution_mensuelle, valeur_finale, nb_annees):
     """
-    Calcule le CAGR pour un investissement DCA en utilisant la méthode IRR/XIRR
-    Cette méthode calcule le taux de rendement interne réel
+    Calcule le CAGR pour un investissement DCA
+    Formule : ((Valeur_finale / Montant_total_investi) ^ (1 / nb_annees)) - 1
     """
     if nb_annees <= 0:
         return 0
     
-    # Méthode itérative pour trouver l'IRR (Internal Rate of Return)
-    # On cherche le taux r tel que VAN = 0
-    from scipy.optimize import newton
+    # Calcul du montant total investi (A)
+    montant_total_investi = montant_initial + (contribution_mensuelle * 12 * nb_annees)
     
-    def npv(taux):
-        # Valeur actuelle nette des flux de trésorerie
-        total = -montant_initial  # Investissement initial (sortie)
-        
-        # Contributions mensuelles
-        for mois in range(1, int(nb_annees * 12) + 1):
-            total -= contribution_mensuelle / ((1 + taux) ** (mois / 12))
-        
-        # Valeur finale (entrée)
-        total += valeur_finale / ((1 + taux) ** nb_annees)
-        
-        return total
+    if montant_total_investi <= 0:
+        return 0
     
-    try:
-        # Trouver le taux qui rend la VAN = 0
-        irr = newton(npv, 0.05)  # Estimation initiale de 5%
-        return irr
-    except:
-        # Si la méthode échoue, utiliser la formule approximative
-        total_contributions = montant_initial + (contribution_mensuelle * 12 * nb_annees)
-        valeur_moyenne_investie = montant_initial + (total_contributions - montant_initial) / 2
-        
-        if valeur_moyenne_investie <= 0:
-            return 0
-        
-        cagr = (valeur_finale / valeur_moyenne_investie) ** (1 / nb_annees) - 1
-        return cagr
+    # Formule CAGR : ((Vfinal / A) ^ (1 / t)) - 1
+    cagr = (valeur_finale / montant_total_investi) ** (1 / nb_annees) - 1
+    
+    return cagr
 
 def simuler_investissement_dca_historique(montant_initial, contribution, frequence, prix_historiques, frais_annuels=0):
     """
