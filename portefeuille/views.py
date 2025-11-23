@@ -40,17 +40,12 @@ class SimuerPortefeuilleView(APIView):
 
             df = telecharger_donnees_marche(ticker, periode)
             if df.empty:
-<<<<<<< HEAD
                 return Response(
                     {"error": f"impossible de télécharger {ticker}"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
             # Calculer les rendements 
-=======
-                return Response({"error": f"Impossible de télécharger {ticker}"}, status=status.HTTP_400_BAD_REQUEST)
-            
->>>>>>> d264fed78a673930db893c493d6dff15844d5daa
             rendements = calculer_rendements(df['Close'])
             if rendements_portefeuille is None:
                 rendements_portefeuille = rendements * ponderation
@@ -75,15 +70,9 @@ class SimuerPortefeuilleView(APIView):
         volatilite = calculer_volatilite(rendements_array)
         sharpe = calculer_sharpe_ratio(rendements_array, risques)
 
-<<<<<<< HEAD
         # Simuler DCA avec les prix historiques réels
         simulation_dca = simuler_investissement_dca_historique(
             montant_initial, montant_contribution, frequence, prix_portefeuille, frais
-=======
-        # --- Simulation portefeuille DCA ---
-        simulation_dca = simuler_investissement_dca(
-            montant_initial, montant_contribution, frequence, duree, rendement_moyen, frais
->>>>>>> d264fed78a673930db893c493d6dff15844d5daa
         )
 
         # Calculer les rendements périodiques détaillés
@@ -115,7 +104,6 @@ class SimuerPortefeuilleView(APIView):
             # Si la comparaison échoue, continuer sans
             pass
 
-<<<<<<< HEAD
         # Prédiction avec régression linéaire
         if len(donnees_annuelles) > 1:
             # Préparer les données pour la régression
@@ -133,26 +121,6 @@ class SimuerPortefeuilleView(APIView):
                     'valeur_predite': round(float(predictions[i]), 2)
                 }
                 for i in range(len(predictions))
-=======
-        # --- ACWI simulé et aligné sur le portefeuille ---
-        acwi_df = telecharger_donnees_marche("ACWI", periode)
-        acwi_data = []
-        if not acwi_df.empty:
-            acwi_rendements = calculer_rendements(acwi_df['Close'])
-            acwi_simulation = simuler_investissement_dca(
-                montant_initial,
-                montant_contribution,
-                frequence,
-                duree,
-                calculer_rendement_moyen(acwi_rendements.values),
-                frais
-            )
-            annees_portefeuille = [d['annee'] for d in simulation_dca['donnees_annuelles']]
-            acwi_dict = {d['annee']: d['valeur'] for d in acwi_simulation['donnees_annuelles']}
-            acwi_data = [
-                {'annee': annee, 'valeur': round(acwi_dict.get(annee, list(acwi_dict.values())[-1]), 2)}
-                for annee in annees_portefeuille
->>>>>>> d264fed78a673930db893c493d6dff15844d5daa
             ]
 
         # --- Fréquences lisibles ---
@@ -178,12 +146,8 @@ class SimuerPortefeuilleView(APIView):
                 'rendement_total': simulation_dca['rendement_total']
             },
             'simulation': simulation_dca,
-<<<<<<< HEAD
             'rendements_detailles': rendements_detailles,
             'impact_inflation': impact_inflation,
             'comparaison_indice': comparaison_indice,
             'predictions_futures': predictions_futures
-=======
-            'acwi': acwi_data
->>>>>>> d264fed78a673930db893c493d6dff15844d5daa
         })
