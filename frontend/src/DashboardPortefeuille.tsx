@@ -1,54 +1,70 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
 import "./App.css";
 
+// Types des données
 type Donnee = { annee: number; valeur: number };
-type DashboardProps = { data: any };
+type AcwiData = { annee: number; indice: number };
+type RatiosFinanciers = {
+  rendement_moyen_annuel: number;
+  volatilite_annuelle: number;
+  sharpe_ratio: number;
+  cagr: number;
+  rendement_total: number;
+};
+type Actif = { nom: string };
+type Parametres = { actifs: Actif[] };
+
+// Type complet du prop data
+type SimulationData = {
+  simulation?: { donnees_annuelles: Donnee[] };
+  comparaison_indice?: { donnees_comparaison: AcwiData[] };
+  ratios_financiers: RatiosFinanciers;
+  parametres: Parametres;
+};
+
+type DashboardProps = { data: SimulationData };
 
 export default function DashboardPortefeuille({ data }: DashboardProps) {
   if (!data) return <div>Simulation non effectuée</div>;
 
+  // Données du portefeuille
   const donneesPortefeuille: Donnee[] = data.simulation?.donnees_annuelles || [];
-  const acwi: Donnee[] = data.acwi || [];
 
-  // Fusionner les données pour le graphique de comparaison
-  // On aligne les années pour que les deux lignes correspondent
-  const annees = Array.from(new Set([
-    ...donneesPortefeuille.map(d => d.annee),
-    ...acwi.map(d => d.annee)
-  ])).sort((a, b) => a - b);
+  // Données ACWI
+  const acwi: AcwiData[] = data.comparaison_indice?.donnees_comparaison || [];
+  console.log("Données ACWI reçues :", acwi);
 
-  const donneesComparaison = annees.map(annee => {
-    const port = donneesPortefeuille.find(d => d.annee === annee)?.valeur || null;
-    const acwiVal = acwi.find(d => d.annee === annee)?.valeur || null;
-    return { annee, portefeuille: port, acwi: acwiVal };
-  });
+  // Fusionner portefeuille et ACWI par année
+  const donneesComparaison = donneesPortefeuille.map((d) => ({
+    annee: d.annee,
+    portefeuille: d.valeur,
+    acwi: acwi.find(a => a.annee === d.annee)?.indice ?? 0
+  }));
 
   return (
     <div style={{ marginTop: "40px", padding: "20px", fontFamily: "Arial, sans-serif" }}>
       <h2 style={{ textAlign: "center" }}>Résultats du portefeuille</h2>
 
+      {/* Ratios financiers */}
       <div style={{ marginBottom: "20px" }}>
         <h3>Ratios financiers</h3>
-          <div style={{ marginBottom: "20px" }}>
- 
-  <div className="grid-container">
-    {[
-      { label: "Rendement moyen annuel", value: data.ratios_financiers.rendement_moyen_annuel + "%" },
-      { label: "Volatilité", value: data.ratios_financiers.volatilite_annuelle + "%" },
-      { label: "Sharpe Ratio", value: data.ratios_financiers.sharpe_ratio },
-      { label: "CAGR", value: data.ratios_financiers.cagr + "%" },
-      { label: "Rendement total", value: data.ratios_financiers.rendement_total + "%" },
-    ].map((ratio) => (
-      <div key={ratio.label} className="field-card">
-        <label>{ratio.label}</label>
-        <span style={{ fontSize: "18px", color: "#222" }}>{ratio.value}</span>
-      </div>
-    ))}
-  </div>
-</div>
-
+        <div className="grid-container">
+          {[
+            { label: "Rendement moyen annuel", value: data.ratios_financiers.rendement_moyen_annuel + "%" },
+            { label: "Volatilité", value: data.ratios_financiers.volatilite_annuelle + "%" },
+            { label: "Sharpe Ratio", value: data.ratios_financiers.sharpe_ratio },
+            { label: "CAGR", value: data.ratios_financiers.cagr + "%" },
+            { label: "Rendement total", value: data.ratios_financiers.rendement_total + "%" },
+          ].map((ratio) => (
+            <div key={ratio.label} className="field-card">
+              <label>{ratio.label}</label>
+              <span style={{ fontSize: "18px", color: "#222" }}>{ratio.value}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
+      {/* Graphique du portefeuille */}
       <div style={{ overflowX: "auto", marginBottom: "40px" }}>
         <h3>Évolution du portefeuille</h3>
         <LineChart width={700} height={300} data={donneesPortefeuille}>
@@ -60,12 +76,13 @@ export default function DashboardPortefeuille({ data }: DashboardProps) {
           <Line
             type="monotone"
             dataKey="valeur"
-            name={data.parametres.actifs[0].nom} // ETF choisi
+            name={data.parametres.actifs[0].nom} 
             stroke="#8884d8"
           />
         </LineChart>
       </div>
 
+      {/* Graphique comparaison portefeuille vs ACWI */}
       <div style={{ overflowX: "auto" }}>
         <h3>Comparaison avec l'indice ACWI IMI</h3>
         <LineChart width={700} height={300} data={donneesComparaison}>
@@ -77,7 +94,7 @@ export default function DashboardPortefeuille({ data }: DashboardProps) {
           <Line
             type="monotone"
             dataKey="portefeuille"
-            name={data.parametres.actifs[0].nom} // ETF choisi
+            name={data.parametres.actifs[0].nom} 
             stroke="#8884d8"
           />
           <Line
