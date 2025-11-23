@@ -1,4 +1,5 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
+import "./App.css";
 
 type Donnee = { annee: number; valeur: number };
 type DashboardProps = { data: any };
@@ -28,13 +29,24 @@ export default function DashboardPortefeuille({ data }: DashboardProps) {
 
       <div style={{ marginBottom: "20px" }}>
         <h3>Ratios financiers</h3>
-        <ul>
-          <li>Rendement moyen annuel : {data.ratios_financiers.rendement_moyen_annuel}%</li>
-          <li>Volatilité : {data.ratios_financiers.volatilite_annuelle}%</li>
-          <li>Sharpe Ratio : {data.ratios_financiers.sharpe_ratio}</li>
-          <li>CAGR : {data.ratios_financiers.cagr}%</li>
-          <li>Rendement total : {data.ratios_financiers.rendement_total}%</li>
-        </ul>
+          <div style={{ marginBottom: "20px" }}>
+ 
+  <div className="grid-container">
+    {[
+      { label: "Rendement moyen annuel", value: data.ratios_financiers.rendement_moyen_annuel + "%" },
+      { label: "Volatilité", value: data.ratios_financiers.volatilite_annuelle + "%" },
+      { label: "Sharpe Ratio", value: data.ratios_financiers.sharpe_ratio },
+      { label: "CAGR", value: data.ratios_financiers.cagr + "%" },
+      { label: "Rendement total", value: data.ratios_financiers.rendement_total + "%" },
+    ].map((ratio) => (
+      <div key={ratio.label} className="field-card">
+        <label>{ratio.label}</label>
+        <span style={{ fontSize: "18px", color: "#222" }}>{ratio.value}</span>
+      </div>
+    ))}
+  </div>
+</div>
+
       </div>
 
       <div style={{ overflowX: "auto", marginBottom: "40px" }}>
