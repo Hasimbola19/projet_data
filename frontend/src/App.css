@@ -1,8 +1,10 @@
 #root {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  background-color: transparent;
+  color: #e4e4e7;
 }
 
 .logo {
@@ -21,11 +23,12 @@
 .modern-grid {
   max-width: 1200px;
   margin: 2rem auto;
-  padding: 2rem;
-  background: #f8f9fc;
-  border-radius: 20px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  font-family: 'Arial', sans-serif;
+  padding: 2.5rem;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  border: 1px solid rgba(148, 163, 184, 0.1);
 }
 
 /* Grille 3 colonnes */
@@ -37,35 +40,51 @@
 
 /* Carte individuelle pour chaque champ */
 .field-card {
-  background: #fff;
-  padding: 1rem 1.2rem;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  padding: 1.2rem 1.4rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(148, 163, 184, 0.15);
 }
 
 .field-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.4);
 }
 
 /* Labels et champs */
 .field-card label {
   display: block;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: #444;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+  color: #cbd5e1;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .field-card input,
 .field-card select {
   width: 100%;
-  padding: 0.7rem 1rem;
-  border-radius: 10px;
-  border: 1px solid #ccd;
-  font-size: 14px;
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
+  border: 2px solid rgba(148, 163, 184, 0.2);
+  font-size: 15px;
   margin-bottom: 0.3rem;
   box-sizing: border-box;
+  background-color: #0f172a;
+  color: #e4e4e7;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.field-card input:focus,
+.field-card select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background-color: #1e293b;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15), 0 4px 12px rgba(59, 130, 246, 0.2);
 }
 
 /* Carte large pour les actifs */
@@ -75,22 +94,26 @@
 
 /* Bouton simuler */
 .submit-btn {
-  margin-top: 20px;
+  margin-top: 24px;
   width: 100%;
-  padding: 1rem;
-  background: linear-gradient(90deg, #4caf50, #43a047);
+  padding: 1.2rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .submit-btn:hover {
-  background: linear-gradient(90deg, #43a047, #4caf50);
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
 }
 
 /* Responsive tablette (2 colonnes) */
