@@ -1,10 +1,10 @@
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend, ComposedChart, BarChart, Bar, Cell, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend, BarChart, Bar, Cell, ResponsiveContainer } from "recharts";
 import "./App.css";
 
 // Types des données
 type Donnee = { annee: number; valeur: number; date?: string };
-type DonneeMensuelle = { date: string; valeur: number; contributions?: number; gain?: number };
-type ComparaisonData = { date: string; portefeuille: number; indice: number; ecart: number };
+type DonneeMensuelle = { date: string; valeur: number };
+type ComparaisonData = { date: string; portefeuille: number; indice: number };
 type PredictionData = { 
   date: string;
   valeur_predite: number; 
@@ -35,7 +35,7 @@ type RatiosFinanciers = {
   cagr: number;
   rendement_total: number;
 };
-type Actif = { nom: string };
+type Actif = { ticker: string; ponderation: number };
 type Parametres = { actifs: Actif[] };
 
 // Type complet du prop data
@@ -48,7 +48,7 @@ type SimulationData = {
   ratios_financiers: RatiosFinanciers;
   parametres: Parametres;
   predictions_futures?: PredictionData[];
-  histogramme_rendements?: HistogrammeData[];
+  histogramme_rendements?: HistogrammeData;
   simulation_lump_sum?: SimulationLumpSum;
 };
 
@@ -75,7 +75,6 @@ export default function DashboardPortefeuille({ data }: DashboardProps) {
   // Données de comparaison avec l'indice
   const donneesComparaison = data.comparaison_indice?.donnees_comparaison || [];
   const nomIndice = data.comparaison_indice?.indice?.nom || "Indice Mondial";
-  console.log("Données de comparaison reçues :", donneesComparaison);
 
   // Transformer pour le graphique avec année calendaire
   const donneesGraphiqueComparaison = donneesComparaison.map((d) => {
@@ -90,7 +89,6 @@ export default function DashboardPortefeuille({ data }: DashboardProps) {
   
   // Données de prédiction futures
   const predictionsFutures = data.predictions_futures || [];
-  console.log("Prédictions futures :", predictionsFutures);
 
   return (
     <div style={{ marginTop: "20px", fontFamily: "'Inter', 'Segoe UI', sans-serif", backgroundColor: "#0f172a", padding: "20px", minHeight: "100vh", backgroundImage: "radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%)" }}>
@@ -389,7 +387,7 @@ export default function DashboardPortefeuille({ data }: DashboardProps) {
               dataKey="rendement"
               name="Rendement annuel"
             >
-              {data.histogramme_rendements.rendements_annuels.map((entry, index) => (
+              {data.histogramme_rendements.rendements_annuels.map((entry: RendementAnnuel, index: number) => (
                 <Cell key={`cell-${index}`} fill={entry.rendement >= 0 ? "#4CAF50" : "#f44336"} />
               ))}
             </Bar>
@@ -400,16 +398,16 @@ export default function DashboardPortefeuille({ data }: DashboardProps) {
           <div style={{ display: "flex", justifyContent: "space-around", marginTop: "24px", gap: "20px" }}>
             <div style={{ flex: 1, background: "linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%)", padding: "24px", borderRadius: "12px", border: "1px solid rgba(34, 197, 94, 0.3)" }}>
               <h3 style={{ color: "#4ade80", marginBottom: "20px", fontSize: "20px", fontWeight: "700" }}>🏆 Meilleures Années</h3>
-              {data.histogramme_rendements.meilleures_annees.map((annee, index) => (
-                <div key={index} style={{ padding: "14px 0", borderBottom: index < data.histogramme_rendements.meilleures_annees.length - 1 ? "1px solid rgba(34, 197, 94, 0.2)" : "none", color: "#e4e4e7" }}>
+              {data.histogramme_rendements.meilleures_annees.map((annee: RendementAnnuel, index: number) => (
+                <div key={index} style={{ padding: "14px 0", borderBottom: index < data.histogramme_rendements!.meilleures_annees.length - 1 ? "1px solid rgba(34, 197, 94, 0.2)" : "none", color: "#e4e4e7" }}>
                   <strong>{annee.annee}</strong>: +{annee.rendement.toFixed(2)}%
                 </div>
               ))}
             </div>
             <div style={{ flex: 1, background: "linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)", padding: "24px", borderRadius: "12px", border: "1px solid rgba(239, 68, 68, 0.3)" }}>
               <h3 style={{ color: "#f87171", marginBottom: "20px", fontSize: "20px", fontWeight: "700" }}>📉 Pires Années</h3>
-              {data.histogramme_rendements.pires_annees.map((annee, index) => (
-                <div key={index} style={{ padding: "14px 0", borderBottom: index < data.histogramme_rendements.pires_annees.length - 1 ? "1px solid rgba(239, 68, 68, 0.2)" : "none", color: "#e4e4e7" }}>
+              {data.histogramme_rendements.pires_annees.map((annee: RendementAnnuel, index: number) => (
+                <div key={index} style={{ padding: "14px 0", borderBottom: index < data.histogramme_rendements!.pires_annees.length - 1 ? "1px solid rgba(239, 68, 68, 0.2)" : "none", color: "#e4e4e7" }}>
                   <strong>{annee.annee}</strong>: {annee.rendement.toFixed(2)}%
                 </div>
               ))}

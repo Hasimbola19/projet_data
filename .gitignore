@@ -1,3 +1,5 @@
 node_modules
 frontend/node_modules
 portefeuille/__pycache__/
+.idea
+projet_data/__pycache__/

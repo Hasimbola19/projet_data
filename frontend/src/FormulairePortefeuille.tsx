@@ -46,12 +46,6 @@ export default function FormulairePortefeuille({ onSubmit }: FormulaireProps) {
     { ticker: "LQD", nom: "iShares Investment Grade Corporate" },
   ];
 
-  const ALL_ASSETS = [
-    { type: "ETF", list: ETF_LIST },
-    { type: "Action", list: ACTIONS_LIST },
-    { type: "Obligation", list: OBLIGATIONS_LIST },
-  ];
-
   // Calculer la pondération totale du portefeuille
   const ponderationTotale = portefeuille.reduce((sum, a) => sum + a.ponderation, 0);
   const ponderationRestante = 100 - ponderationTotale;
