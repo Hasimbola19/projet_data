@@ -1,4 +1,6 @@
 import { useState } from "react";
+import Navbar from "./Navbar";
+import Hero from "./Hero";
 import FormulairePortefeuille from "./FormulairePortefeuille";
 import DashboardPortefeuille from "./DashboardPortefeuille";
 
@@ -25,10 +27,15 @@ function App() {
 
 
   return (
-    <div>
-      <h1>Simulation Portefeuille Passif</h1>
-      <FormulairePortefeuille onSubmit={handleSimuler} />
-      <DashboardPortefeuille data={resultat} />
+    <div style={{ backgroundColor: "#0f172a", minHeight: "100vh" }}>
+      <Navbar />
+      <Hero />
+      <div id="simulation">
+        <FormulairePortefeuille onSubmit={handleSimuler} />
+      </div>
+      <div id="resultats">
+        <DashboardPortefeuille data={resultat} />
+      </div>
     </div>
   );
 }

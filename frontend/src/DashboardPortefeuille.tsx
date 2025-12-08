@@ -91,9 +91,8 @@ export default function DashboardPortefeuille({ data }: DashboardProps) {
   const predictionsFutures = data.predictions_futures || [];
 
   return (
-    <div style={{ marginTop: "20px", fontFamily: "'Inter', 'Segoe UI', sans-serif", backgroundColor: "#0f172a", padding: "20px", minHeight: "100vh", backgroundImage: "radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%)" }}>
-      <div style={{ maxWidth: "1400px", margin: "0 auto", width: "100%" }}>
-      <h1 style={{ textAlign: "center", color: "#f1f5f9", marginBottom: "48px", fontSize: "36px", fontWeight: "700", letterSpacing: "-1px" }}>Analyse du Portefeuille</h1>
+    <div style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", backgroundColor: "#0f172a", minHeight: "100vh", backgroundImage: "radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%)" }}>
+      <h1 style={{ textAlign: "center", color: "#f1f5f9", marginBottom: "48px", paddingTop: "40px", fontSize: "36px", fontWeight: "700", letterSpacing: "-1px" }}>Analyse du Portefeuille</h1>
 
       {/* Composition du portefeuille */}
       <div style={{ background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)", padding: "32px", borderRadius: "16px", marginBottom: "24px", boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)", border: "1px solid rgba(148, 163, 184, 0.1)" }}>
@@ -511,7 +510,6 @@ export default function DashboardPortefeuille({ data }: DashboardProps) {
         >
           📄 Exporter en PDF
         </button>
-      </div>
       </div>
     </div>
   );
