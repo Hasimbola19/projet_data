@@ -17,7 +17,7 @@ export default function Hero() {
           WebkitTextFillColor: "transparent",
           backgroundClip: "text"
         }}>
-          Simulez votre Investissement Passif
+          Simulez un Investissement Passif
         </h2>
         <p style={{
           fontSize: "18px",
@@ -45,7 +45,7 @@ export default function Hero() {
             borderRadius: "12px",
             border: "1px solid rgba(59, 130, 246, 0.2)"
           }}>
-            <div style={{ fontSize: "28px", marginBottom: "8px" }}>📈</div>
+            <div style={{ fontSize: "28px", marginBottom: "8px" }}></div>
             <div style={{ color: "#cbd5e1", fontSize: "14px", fontWeight: "600" }}>Données Historiques</div>
           </div>
           <div style={{
@@ -54,7 +54,7 @@ export default function Hero() {
             borderRadius: "12px",
             border: "1px solid rgba(139, 92, 246, 0.2)"
           }}>
-            <div style={{ fontSize: "28px", marginBottom: "8px" }}>🎯</div>
+            <div style={{ fontSize: "28px", marginBottom: "8px" }}></div>
             <div style={{ color: "#cbd5e1", fontSize: "14px", fontWeight: "600" }}>Prédictions 5 ans</div>
           </div>
           <div style={{
@@ -63,7 +63,7 @@ export default function Hero() {
             borderRadius: "12px",
             border: "1px solid rgba(16, 185, 129, 0.2)"
           }}>
-            <div style={{ fontSize: "28px", marginBottom: "8px" }}>💰</div>
+            <div style={{ fontSize: "28px", marginBottom: "8px" }}></div>
             <div style={{ color: "#cbd5e1", fontSize: "14px", fontWeight: "600" }}>Multi-Actifs</div>
           </div>
           <div style={{
@@ -72,7 +72,7 @@ export default function Hero() {
             borderRadius: "12px",
             border: "1px solid rgba(245, 158, 11, 0.2)"
           }}>
-            <div style={{ fontSize: "28px", marginBottom: "8px" }}>📊</div>
+            <div style={{ fontSize: "28px", marginBottom: "8px" }}></div>
             <div style={{ color: "#cbd5e1", fontSize: "14px", fontWeight: "600" }}>Analyse Complète</div>
           </div>
         </div>

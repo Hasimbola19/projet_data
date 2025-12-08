@@ -30,7 +30,6 @@ export default function Navbar() {
             color: "white",
             boxShadow: "0 4px 12px rgba(59, 130, 246, 0.4)"
           }}>
-            📊
           </div>
           <div>
             <h1 style={{
