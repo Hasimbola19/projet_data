@@ -30,6 +30,7 @@ export default function Navbar() {
             color: "white",
             boxShadow: "0 4px 12px rgba(59, 130, 246, 0.4)"
           }}>
+            PS
           </div>
           <div>
             <h1 style={{
@@ -84,31 +85,6 @@ export default function Navbar() {
           >
             Résultats
           </a>
-          <button
-            style={{
-              padding: "10px 24px",
-              background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              fontSize: "14px",
-              fontWeight: "700",
-              cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
-              transition: "all 0.2s"
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow = "0 6px 16px rgba(59, 130, 246, 0.4)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 12px rgba(59, 130, 246, 0.3)";
-            }}
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          >
-            Nouvelle Simulation
-          </button>
         </div>
       </div>
     </nav>
